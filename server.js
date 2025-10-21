@@ -69,6 +69,34 @@ const db = new sqlite3.Database('./database.db', (err) => {
 app.use(express.static(path.join(__dirname)));
 app.use(express.json()); // For parsing application/json
 
+// Register endpoint
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    const role = 'user'; // Default role for new registrations
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required.' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        db.run(`INSERT INTO Users (username, password, role) VALUES (?, ?, ?)`, 
+            [username, hashedPassword, role], function(err) {
+                if (err) {
+                    if (err.message.includes('UNIQUE constraint failed')) {
+                        return res.status(409).json({ message: 'Username already exists.' });
+                    }
+                    console.error('Registration error:', err.message);
+                    return res.status(500).send('Server error during registration.');
+                }
+                res.status(201).json({ message: 'Registration successful', userId: this.lastID });
+            });
+    } catch (err) {
+        console.error('Error hashing password:', err);
+        res.status(500).send('Server error.');
+    }
+});
+
 // Login endpoint
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;

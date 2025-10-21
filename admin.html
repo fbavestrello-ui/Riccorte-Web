@@ -6,15 +6,16 @@
     <title>Admin Panel - Riccorte</title>
     <link rel="stylesheet" href="style.css"> <!-- Re-use existing styles or create new admin-specific styles -->
     <style>
-        /* Basic Admin Panel Styles - Can be moved to style.css later */
+        /* Basic Admin Panel Styles - Black and White for Legibility */
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f8f8f8; /* Light gray background */
             margin: 0;
             padding-top: 60px; /* Adjust based on header height */
+            color: #333; /* Dark gray text */
         }
         .admin-header {
-            background-color: #333;
+            background-color: #222; /* Dark header */
             color: #fff;
             padding: 15px 20px;
             display: flex;
@@ -25,6 +26,7 @@
             top: 0;
             left: 0;
             z-index: 1000;
+            border-bottom: 1px solid #555;
         }
         .admin-header h1 {
             margin: 0;
@@ -48,7 +50,7 @@
             text-decoration: underline;
         }
         .logout-btn {
-            background-color: #dc3545;
+            background-color: #dc3545; /* Keep red for logout for clarity */
             color: white;
             border: none;
             padding: 8px 15px;
@@ -63,16 +65,16 @@
             max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #fff;
+            background-color: #fff; /* White content area */
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Lighter shadow */
         }
         .admin-section {
             margin-bottom: 40px;
         }
         .admin-section h2 {
             color: #333;
-            border-bottom: 2px solid #eee;
+            border-bottom: 1px solid #ddd; /* Lighter border */
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -82,13 +84,58 @@
             margin-top: 15px;
         }
         table th, table td {
-            border: 1px solid #ddd;
+            border: 1px solid #ddd; /* Light gray borders */
             padding: 8px;
             text-align: left;
         }
         table th {
-            background-color: #f2f2f2;
+            background-color: #eee; /* Light gray header */
             font-weight: 600;
+            color: #333;
+        }
+        /* Styles for forms within admin panel */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="datetime-local"] {
+            width: calc(100% - 18px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn-primary {
+            background-color: #444; /* Dark gray primary button */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary:hover {
+            background-color: #000; /* Black on hover */
+        }
+        .btn-secondary {
+            background-color: #888; /* Medium gray secondary button */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #666; /* Darker gray on hover */
         }
     </style>
 </head>

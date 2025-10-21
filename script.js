@@ -15,6 +15,15 @@ document.addEventListener("DOMContentLoaded", function() {
     const loginUsernameInput = document.getElementById('username'); // From login form
     const loginPasswordInput = document.getElementById('password'); // From login form
 
+    // --- Register Elements ---
+    const registerBtn = document.getElementById('register-btn');
+    const registerSection = document.getElementById('register-section');
+    const registerForm = document.getElementById('register-form');
+    const registerMessage = document.getElementById('register-message');
+    const regUsernameInput = document.getElementById('reg-username');
+    const regPasswordInput = document.getElementById('reg-password');
+    const regConfirmPasswordInput = document.getElementById('reg-confirm-password');
+
     // --- Formulario de Agendar ---
     const genderSelect = document.getElementById("gender");
     const serviceSelect = document.getElementById("service");
@@ -175,11 +184,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // --- Login Functionality ---
+    // --- Login/Register Functionality ---
     loginBtn.addEventListener('click', () => {
         loginSection.style.display = loginSection.style.display === 'none' ? 'block' : 'none';
-        // Optionally hide other sections if login is shown
-        // heroSection.style.display = 'none';
+        registerSection.style.display = 'none'; // Hide register form if login is shown
+    });
+
+    registerBtn.addEventListener('click', () => {
+        registerSection.style.display = registerSection.style.display === 'none' ? 'block' : 'none';
+        loginSection.style.display = 'none'; // Hide login form if register is shown
     });
 
     loginForm.addEventListener('submit', async (e) => {
@@ -203,12 +216,13 @@ document.addEventListener("DOMContentLoaded", function() {
             if (response.ok) {
                 showNotification(data.message, 'success');
                 loginSection.style.display = 'none'; // Hide login form on success
-                // Redirect or show admin panel based on role
                 if (data.role === 'admin') {
                     window.location.href = '/admin.html'; // Redirect to admin page
                 } else {
-                    // Handle regular user login, maybe a user dashboard
                     showNotification('Bienvenido, ' + username + '!', 'success');
+                    // Optionally redirect regular users to a user dashboard or hide forms
+                    loginSection.style.display = 'none';
+                    registerSection.style.display = 'none';
                 }
             } else {
                 loginMessage.textContent = data.message || 'Error de inicio de sesión.';
@@ -217,6 +231,47 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             console.error('Error during login fetch:', error);
             loginMessage.textContent = 'Error de conexión con el servidor.';
+            showNotification('Error de conexión con el servidor.', 'error');
+        }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = regUsernameInput.value;
+        const password = regPasswordInput.value;
+        const confirmPassword = regConfirmPasswordInput.value;
+
+        registerMessage.textContent = ''; // Clear previous messages
+
+        if (password !== confirmPassword) {
+            registerMessage.textContent = 'Las contraseñas no coinciden.';
+            showNotification('Las contraseñas no coinciden.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showNotification(data.message + ' Ahora puedes iniciar sesión.', 'success');
+                registerForm.reset();
+                registerSection.style.display = 'none'; // Hide register form on success
+                loginSection.style.display = 'block'; // Show login form
+            } else {
+                registerMessage.textContent = data.message || 'Error de registro.';
+                showNotification(data.message || 'Error de registro.', 'error');
+            }
+        } catch (error) {
+            console.error('Error during registration fetch:', error);
+            registerMessage.textContent = 'Error de conexión con el servidor.';
             showNotification('Error de conexión con el servidor.', 'error');
         }
     });
