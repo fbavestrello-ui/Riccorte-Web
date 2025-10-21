@@ -99,6 +99,32 @@ function isAuthenticatedAdmin(req, res, next) {
     next();
 }
 
+// Add new appointment (Admin only)
+app.post('/api/appointments', isAuthenticatedAdmin, (req, res) => {
+    const { clientName, service, appointmentDate, status } = req.body;
+    db.run(`INSERT INTO Appointments (clientName, service, appointmentDate, status) VALUES (?, ?, ?, ?)`, 
+        [clientName, service, appointmentDate, status], function(err) {
+            if (err) {
+                console.error('Error adding appointment:', err.message);
+                return res.status(500).send('Server error adding appointment.');
+            }
+            res.status(201).json({ message: 'Appointment added successfully', id: this.lastID });
+        });
+});
+
+// Add new inventory item (Admin only)
+app.post('/api/inventory', isAuthenticatedAdmin, (req, res) => {
+    const { itemName, quantity, price } = req.body;
+    db.run(`INSERT INTO Inventory (itemName, quantity, price) VALUES (?, ?, ?)`, 
+        [itemName, quantity, price], function(err) {
+            if (err) {
+                console.error('Error adding inventory item:', err.message);
+                return res.status(500).send('Server error adding inventory item.');
+            }
+            res.status(201).json({ message: 'Inventory item added successfully', id: this.lastID });
+        });
+});
+
 // Get all appointments (Admin only)
 app.get('/api/appointments', isAuthenticatedAdmin, (req, res) => {
     db.all('SELECT * FROM Appointments', [], (err, rows) => {

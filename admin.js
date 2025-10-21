@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const appointmentsTableBody = document.getElementById('appointments-table-body');
     const inventoryTableBody = document.getElementById('inventory-table-body');
 
+    // Add Appointment Form Elements
+    const addAppointmentBtn = document.getElementById('add-appointment-btn');
+    const addAppointmentFormContainer = document.getElementById('add-appointment-form-container');
+    const addAppointmentForm = document.getElementById('add-appointment-form');
+    const cancelAddAppointmentBtn = document.getElementById('cancel-add-appointment');
+
+    // Add Inventory Form Elements
+    const addInventoryBtn = document.getElementById('add-inventory-btn');
+    const addInventoryFormContainer = document.getElementById('add-inventory-form-container');
+    const addInventoryForm = document.getElementById('add-inventory-form');
+    const cancelAddInventoryBtn = document.getElementById('cancel-add-inventory');
+
     // Function to fetch and display appointments
     async function fetchAppointments() {
         try {
@@ -60,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.insertCell().textContent = item.id;
                 row.insertCell().textContent = item.itemName;
                 row.insertCell().textContent = item.quantity;
-                row.insertCell().textContent = `$${item.price.toFixed(2)}`;
+                row.insertCell().textContent = `${item.price.toFixed(2)}`;
                 const actionsCell = row.insertCell();
                 actionsCell.innerHTML = `<button onclick="editInventoryItem(${item.id})">Editar</button> <button onclick="deleteInventoryItem(${item.id})">Eliminar</button>`;
             });
@@ -91,6 +103,87 @@ document.addEventListener('DOMContentLoaded', () => {
         // In a real app, this would clear session/token
         alert('Cerrando sesión...');
         window.location.href = '/'; // Redirect to home page
+    });
+
+    // --- Add Appointment Functionality ---
+    addAppointmentBtn.addEventListener('click', () => {
+        addAppointmentFormContainer.style.display = 'block';
+    });
+
+    cancelAddAppointmentBtn.addEventListener('click', () => {
+        addAppointmentFormContainer.style.display = 'none';
+        addAppointmentForm.reset();
+    });
+
+    addAppointmentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const clientName = document.getElementById('new-client-name').value;
+        const service = document.getElementById('new-service').value;
+        const appointmentDate = document.getElementById('new-appointment-date').value;
+        const status = document.getElementById('new-appointment-status').value;
+
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ clientName, service, appointmentDate, status }),
+            });
+
+            if (response.ok) {
+                alert('Cita agregada exitosamente!');
+                addAppointmentForm.reset();
+                addAppointmentFormContainer.style.display = 'none';
+                fetchAppointments(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert('Error al agregar cita: ' + (errorData.message || response.statusText));
+            }
+        } catch (error) {
+            console.error('Error adding appointment:', error);
+            alert('Error de conexión al agregar cita.');
+        }
+    });
+
+    // --- Add Inventory Functionality ---
+    addInventoryBtn.addEventListener('click', () => {
+        addInventoryFormContainer.style.display = 'block';
+    });
+
+    cancelAddInventoryBtn.addEventListener('click', () => {
+        addInventoryFormContainer.style.display = 'none';
+        addInventoryForm.reset();
+    });
+
+    addInventoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const itemName = document.getElementById('new-item-name').value;
+        const quantity = parseInt(document.getElementById('new-quantity').value);
+        const price = parseFloat(document.getElementById('new-price').value);
+
+        try {
+            const response = await fetch('/api/inventory', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ itemName, quantity, price }),
+            });
+
+            if (response.ok) {
+                alert('Artículo de inventario agregado exitosamente!');
+                addInventoryForm.reset();
+                addInventoryFormContainer.style.display = 'none';
+                fetchInventory(); // Refresh the list
+            } else {
+                const errorData = await response.json();
+                alert('Error al agregar artículo: ' + (errorData.message || response.statusText));
+            }
+        } catch (error) {
+            console.error('Error adding inventory item:', error);
+            alert('Error de conexión al agregar artículo.');
+        }
     });
 
     // Placeholder functions for edit/delete (will be implemented later)
